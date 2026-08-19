@@ -1,1 +1,174 @@
-__INDEX_HTML__
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>A股资金面每日复盘</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<style>
+:root{
+  --up:#d43a3a; --down:#0d9e6e; --gold:#b8860b; --ink:#1a2233; --sub:#6b7688;
+  --bg:#f4f5f7; --card:#ffffff; --line:#e6e8ec; --dark:#12182b;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;background:var(--bg);color:var(--ink);font-size:14px;line-height:1.7}
+.hero{background:linear-gradient(135deg,#0d1424 0%,#1b2a4a 60%,#243b63 100%);color:#eef1f7;padding:44px 24px 34px}
+.wrap{max-width:1240px;margin:0 auto}
+.hero .kicker{font-size:12px;letter-spacing:.25em;color:#8fa3c8;text-transform:uppercase}
+.hero h1{font-size:30px;font-weight:700;margin:10px 0 8px;line-height:1.35}
+.hero .sub{color:#a9b8d4;font-size:14px}
+.conclusion{background:#fff8ec;border:1px solid #f0dfba;border-left:4px solid var(--gold);border-radius:8px;padding:18px 22px;margin:-22px auto 0;position:relative;max-width:1240px;box-shadow:0 6px 24px rgba(20,30,60,.10)}
+.conclusion .tag{font-size:12px;color:var(--gold);font-weight:700;letter-spacing:.15em;margin-bottom:6px}
+.conclusion p{font-size:14.5px}
+.conclusion b{color:var(--gold)}
+.strip{display:grid;grid-template-columns:repeat(8,1fr);gap:10px;margin:18px auto}
+.strip .chip{background:var(--card);border:1px solid var(--line);border-radius:8px;padding:10px 12px;text-align:center}
+.strip .chip .l{font-size:11.5px;color:var(--sub)}
+.strip .chip .v{font-size:17px;font-weight:700;margin:2px 0}
+.strip .chip .s{font-size:11.5px}
+.tone-up .v,.tone-up .s{color:var(--up)} .tone-down .v,.tone-down .s{color:var(--down)} .tone-flat .v{color:var(--ink)}
+.sec{margin:26px auto}
+.sec-h{display:flex;align-items:baseline;gap:12px;border-bottom:2px solid var(--dark);padding-bottom:8px;margin-bottom:14px}
+.sec-h .no{font-size:22px;font-weight:800;color:var(--gold);font-family:Georgia,serif}
+.sec-h h2{font-size:19px;font-weight:700}
+.sec-h .asof{margin-left:auto;font-size:12px;color:var(--sub)}
+.note{background:#eef2f9;border-radius:8px;padding:12px 16px;font-size:13.5px;color:#3a4660;margin-bottom:14px}
+.note::before{content:"导读　";font-weight:700;color:#33507e}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.grid3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.card{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:16px 18px}
+.card h3{font-size:14.5px;font-weight:700;margin-bottom:10px;color:#2a3450}
+.card h3 .u{font-size:11.5px;color:var(--sub);font-weight:400;margin-left:8px}
+.chart{width:100%;height:300px}
+.chart-tall{height:340px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+th{background:#f0f2f6;color:#4a5568;font-weight:600;padding:8px 10px;text-align:right;border-bottom:2px solid #dde1e8}
+th:first-child,td:first-child{text-align:left}
+td{padding:7px 10px;text-align:right;border-bottom:1px solid #eef0f4;font-variant-numeric:tabular-nums}
+tr:hover td{background:#f7f9fc}
+.up{color:var(--up);font-weight:600} .down{color:var(--down);font-weight:600}
+.ladder-td{display:flex;gap:8px;align-items:center;flex-wrap:wrap;justify-content:flex-start}
+.badge{display:inline-block;background:#fdf0e6;color:#b05a1a;border-radius:4px;padding:0 7px;font-size:12px;font-weight:600}
+.badge.max{background:#f6e3e3;color:#b02a2a}
+.win{font-size:11px;background:#e8edf5;color:#46608c;border-radius:3px;padding:0 5px;margin-left:6px}
+.flow-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.flow-item{display:flex;justify-content:space-between;padding:7px 4px;border-bottom:1px dashed #e8ebf0;font-size:13.5px}
+.bar{height:8px;border-radius:4px;background:#f0f2f6;position:relative;overflow:hidden;margin-top:4px}
+.bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
+.sig{background:var(--card);border:1px solid var(--line);border-radius:10px;padding:14px 18px;margin-bottom:12px}
+.sig-t{font-size:15px;font-weight:700;color:#2a3450;margin-bottom:6px}
+.sig-t .tag{display:inline-block;font-size:11px;color:#fff;background:#33507e;border-radius:4px;padding:1px 8px;margin-right:8px;font-weight:600}
+.sig-w{font-size:13px;color:var(--sub);line-height:1.8;margin-bottom:8px}
+.scn{display:flex;gap:10px;align-items:baseline;font-size:13px;line-height:1.7;padding:6px 0;border-top:1px dashed var(--line)}
+.scn .p{flex:0 0 46px;font-weight:800;font-family:Georgia,serif;font-size:14px}
+.scn .lb{flex:0 0 auto;font-weight:700}
+.scn.up .p,.scn.up .lb{color:var(--up)} .scn.down .p,.scn.down .lb{color:var(--down)} .scn.flat .p,.scn.flat .lb{color:var(--gold)}
+.scn .ds{color:#3a4660}
+footer{margin:34px auto 40px;font-size:12px;color:var(--sub);line-height:1.9;background:#eceef2;border-radius:8px;padding:16px 20px}
+@media (max-width:960px){.strip{grid-template-columns:repeat(4,1fr)}.grid2,.grid3,.flow-grid{grid-template-columns:1fr}.hero h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="hero"><div class="wrap">
+  <div class="kicker">A-SHARE CAPITAL FLOW DAILY REVIEW</div>
+  <h1 id="title"></h1>
+  <div class="sub" id="hero_sub"></div>
+</div></div>
+<div class="conclusion"><div class="tag">核心结论</div><p id="conclusion"></p></div>
+<div class="wrap"><div class="strip" id="strip"></div></div>
+
+<div class="wrap">
+  <!-- ① 总量与量能 -->
+  <section class="sec" id="s1">
+    <div class="sec-h"><span class="no">①</span><h2>总量与量能</h2><span class="asof" id="asof1"></span></div>
+    <div class="note" id="note1"></div>
+    <div class="grid2">
+      <div class="card"><h3>六大指数 + 深证成指</h3><table id="idx_table"></table></div>
+      <div class="card"><h3>两市成交额（上证+深证成指）<span class="u">亿元</span></h3><div id="c_turn" class="chart"></div></div>
+    </div>
+  </section>
+
+  <!-- ② 市场宽度与情绪 -->
+  <section class="sec" id="s2">
+    <div class="sec-h"><span class="no">②</span><h2>市场宽度与情绪</h2><span class="asof" id="asof2"></span></div>
+    <div class="note" id="note2"></div>
+    <div class="grid2">
+      <div class="card"><h3>涨跌停与炸板<span class="u">剔ST，家</span></h3><div id="c_limit" class="chart chart-tall"></div></div>
+      <div class="card"><h3>创新高 / 新低家数<span class="u">剔ST，全历史口径</span></h3><div id="c_nhnl" class="chart chart-tall"></div></div>
+    </div>
+    <div class="grid2" style="margin-top:14px" id="nh_grid">
+      <div class="card"><h3 id="nh_title">历史新高个股</h3><div id="nh_list"></div>
+        <div style="font-size:12px;color:var(--sub);margin-top:8px">口径：收盘价创前复权上市以来新高（约7年窗口，剔ST/退；上市不足窗口期即为上市以来新高）；行业为申万二级。</div></div>
+      <div class="card"><h3>历史新高家数趋势<span class="u">剔ST，家</span></h3><div id="c_nh" class="chart chart-tall"></div></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3 id="ladder_title"></h3><table id="ladder_table"></table>
+      <div style="font-size:12px;color:var(--sub);margin-top:8px" id="ladder_extra"></div></div>
+  </section>
+
+  <!-- ③ 两融 -->
+  <section class="sec" id="s3">
+    <div class="sec-h"><span class="no">③</span><h2>融资融券</h2><span class="asof" id="asof3"></span></div>
+    <div class="note" id="note3"></div>
+    <div class="card"><h3>融资余额与融券余额<span class="u">亿元，交易所披露口径 T+1</span></h3><div id="c_margin" class="chart"></div></div>
+  </section>
+
+  <!-- ④ 主力资金 -->
+  <section class="sec" id="s4">
+    <div class="sec-h"><span class="no">④</span><h2>主力资金流向</h2><span class="asof" id="asof4"></span></div>
+    <div class="note" id="note4"></div>
+    <div class="flow-grid" id="flow_grid"></div>
+  </section>
+
+  <!-- ⑤ 龙虎榜 -->
+  <section class="sec" id="s5">
+    <div class="sec-h"><span class="no">⑤</span><h2>龙虎榜 · 机构席位</h2><span class="asof" id="asof5"></span></div>
+    <div class="note" id="note5"></div>
+    <div class="grid2">
+      <div class="card"><h3>机构净买入榜<span class="u">万元，占比=净买入÷窗口总成交</span></h3><table id="lhb_buy"></table></div>
+      <div class="card"><h3>机构净卖出榜<span class="u">万元，占比=净卖出÷窗口总成交</span></h3><table id="lhb_sell"></table></div>
+    </div>
+    <div class="card" style="margin-top:14px"><h3 id="lhbinst_title">机构当日净买入</h3><div id="c_lhbinst" class="chart"></div>
+      <div style="font-size:12px;color:var(--sub);margin-top:8px">口径：当日龙虎榜全部「机构专用」席位净买入与净卖出差额合计（仅当日窗口，剔除3日窗口与可转债），亿元。</div></div>
+  </section>
+
+  <!-- ⑥ 宽基ETF -->
+  <section class="sec" id="s6">
+    <div class="sec-h"><span class="no">⑥</span><h2>宽基ETF</h2><span class="asof" id="asof6"></span></div>
+    <div class="note" id="note6"></div>
+    <div class="grid2">
+      <div class="card"><h3>五只宽基ETF概览<span class="u">成交额亿元 / 份额亿份</span></h3><table id="etf_table"></table></div>
+      <div class="card"><h3>ETF份额变化<span class="u">亿份，T+1披露</span></h3><div id="c_etf" class="chart chart-tall"></div></div>
+    </div>
+  </section>
+
+  <!-- ⑦ 宏观流动性 -->
+  <section class="sec" id="s7">
+    <div class="sec-h"><span class="no">⑦</span><h2>宏观流动性</h2><span class="asof" id="asof7"></span></div>
+    <div class="note" id="note7"></div>
+    <div class="grid2">
+      <div class="card"><h3>DR007 与 10Y国债收益率<span class="u">%</span></h3><div id="c_rates" class="chart chart-tall"></div></div>
+      <div class="card"><h3>公开市场操作（逆回购）<span class="u">亿元</span></h3><div id="c_omo" class="chart chart-tall"></div></div>
+    </div>
+  </section>
+
+  <!-- ⑧ 次日关注 -->
+  <section class="sec" id="s8">
+    <div class="sec-h"><span class="no">⑧</span><h2>次日关注 · 资金面信号跟踪</h2><span class="asof" id="asof8"></span></div>
+    <div class="note" id="note8"></div>
+    <div id="outlook_list"></div>
+  </section>
+
+  <footer id="foot"></footer>
+</div>
+<script src="data/data_01.js"></script>
+<script src="data/data_02.js"></script>
+<script src="data/data_03.js"></script>
+<script src="data/data_04.js"></script>
+<script src="data/data_05.js"></script>
+<script src="data/data_06.js"></script>
+<script src="data/data_07.js"></script>
+<script src="data/data_08.js"></script>
+<script src="data/data_09.js"></script>
+<script src="render.js"></script>
+</body>
+</html>
