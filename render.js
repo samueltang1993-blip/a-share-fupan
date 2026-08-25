@@ -21,6 +21,7 @@ $('strip').innerHTML = D.text.strip.map(c=>
   `<div class="chip tone-${c.tone==='up'?'up':(c.tone==='down'?'down':'flat')}"><div class="l">${c.label}</div><div class="v">${c.value}</div><div class="s">${c.sub||''}</div></div>`).join('');
 $('foot').textContent = D.text.foot;
 ['1','2','3','4','5','6','7','8'].forEach(i=>$('note'+i).textContent=D.text.notes['s'+i]||'');
+$('note4b').textContent=D.text.notes['s4b']||'';
 
 /* as-of 标签 */
 $('asof1').textContent='as-of '+D.date;
@@ -38,6 +39,8 @@ else $('s6').style.display='none';
 if (D.macro && D.macro.dr007 && D.macro.dr007.v && D.macro.dr007.v.length) $('asof7').textContent='as-of '+D.date;
 else $('s7').style.display='none';
 if (!(D.flow && D.flow.l1_in && D.flow.l1_in.length)) $('s4').style.display='none';
+if (D.ind_bias && D.ind_bias.rows && D.ind_bias.rows.length) $('asof4b').textContent='as-of '+(D.ind_bias.asof||D.date);
+else $('s4b').style.display='none';
 if (!(D.lhb && D.lhb.buy)) $('s5').style.display='none';
 if (!D.nh_detail) $('nh_grid').style.display='none';
 
@@ -148,6 +151,18 @@ if (D.flow && D.flow.l1_in && D.flow.l1_in.length) (function(){
   $('flow_grid').innerHTML =
     block('申万一级 · 净流入 TOP5', F.l1_in, true) + block('申万一级 · 净流出 TOP5', F.l1_out, false) +
     block('申万二级 · 净流入 TOP5', F.l2_in, true) + block('申万二级 · 净流出 TOP5', F.l2_out, false);
+})();
+
+
+/* ④b 行业乖离率（缺失时跳过） */
+if (D.ind_bias && D.ind_bias.rows && D.ind_bias.rows.length) (function(){
+  const IB = D.ind_bias;
+  const head = `<tr><th>分类</th>${IB.dates.map(d=>`<th>${d.replace('/','-')}</th>`).join('')}</tr>`;
+  const rows = IB.rows.map(r=>`<tr><td>${r.name}</td>` + r.v.map(v=>{
+    const c = v==null?'':(v>5?'up':(v<-5?'down':''));
+    return `<td class="${c}">${v==null?'—':fmt(v)}</td>`;
+  }).join('') + `</tr>`).join('');
+  $('indbias_table').innerHTML = head + rows;
 })();
 
 /* ⑤ 龙虎榜 */

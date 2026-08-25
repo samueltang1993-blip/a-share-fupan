@@ -52,6 +52,8 @@ tr:hover td{background:#f7f9fc}
 .badge.max{background:#f6e3e3;color:#b02a2a}
 .win{font-size:11px;background:#e8edf5;color:#46608c;border-radius:3px;padding:0 5px;margin-left:6px}
 .flow-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+#indbias_table th,#indbias_table td{white-space:nowrap}
+#indbias_table td:last-child,#indbias_table th:last-child{font-weight:700}
 .flow-item{display:flex;justify-content:space-between;padding:7px 4px;border-bottom:1px dashed #e8ebf0;font-size:13.5px}
 .bar{height:8px;border-radius:4px;background:#f0f2f6;position:relative;overflow:hidden;margin-top:4px}
 .bar i{position:absolute;left:0;top:0;bottom:0;border-radius:4px}
@@ -119,9 +121,18 @@ footer{margin:34px auto 40px;font-size:12px;color:var(--sub);line-height:1.9;bac
     <div class="flow-grid" id="flow_grid"></div>
   </section>
 
-  <!-- ⑤ 龙虎榜 -->
+  <!-- ⑤ 主要行业趋势分析 -->
+  <section class="sec" id="s4b">
+    <div class="sec-h"><span class="no">⑤</span><h2>主要行业趋势分析</h2><span class="asof" id="asof4b"></span></div>
+    <div class="note" id="note4b"></div>
+    <div class="card"><h3>行业指数对数值 20EMA 乖离率（减法版）<span class="u">%，&gt;5% 标红 / &lt;-5% 标绿</span></h3>
+      <div style="overflow-x:auto"><table id="indbias_table"></table></div>
+      <div style="font-size:12px;color:var(--sub);margin-top:8px">公式：EMA20:=EMA(LN(CLOSE),20)；LOGBIAS:=(LN(CLOSE)-EMA20)×100。该策略源自于广发策略刘晨明的《如何区分主线是调整还是终结？》。若是偏离度过高（&gt;15%）不宜追涨。若是偏离度适中（5%-15%），考虑追涨。短线止损可以设置为偏离度（＜0）。若是偏离度（＜-5%）建议离场。</div></div>
+  </section>
+
+  <!-- ⑥ 龙虎榜 -->
   <section class="sec" id="s5">
-    <div class="sec-h"><span class="no">⑤</span><h2>龙虎榜 · 机构席位</h2><span class="asof" id="asof5"></span></div>
+    <div class="sec-h"><span class="no">⑥</span><h2>龙虎榜 · 机构席位</h2><span class="asof" id="asof5"></span></div>
     <div class="note" id="note5"></div>
     <div class="grid2">
       <div class="card"><h3>机构净买入榜<span class="u">万元，占比=净买入÷窗口总成交</span></h3><table id="lhb_buy"></table></div>
@@ -131,9 +142,9 @@ footer{margin:34px auto 40px;font-size:12px;color:var(--sub);line-height:1.9;bac
       <div style="font-size:12px;color:var(--sub);margin-top:8px">口径：当日龙虎榜全部「机构专用」席位净买入与净卖出差额合计（仅当日窗口，剔除3日窗口与可转债），亿元。</div></div>
   </section>
 
-  <!-- ⑥ 宽基ETF -->
+  <!-- ⑦ 宽基ETF -->
   <section class="sec" id="s6">
-    <div class="sec-h"><span class="no">⑥</span><h2>宽基ETF</h2><span class="asof" id="asof6"></span></div>
+    <div class="sec-h"><span class="no">⑦</span><h2>宽基ETF</h2><span class="asof" id="asof6"></span></div>
     <div class="note" id="note6"></div>
     <div class="grid2">
       <div class="card"><h3>五只宽基ETF概览<span class="u">成交额亿元 / 份额亿份</span></h3><table id="etf_table"></table></div>
@@ -141,9 +152,9 @@ footer{margin:34px auto 40px;font-size:12px;color:var(--sub);line-height:1.9;bac
     </div>
   </section>
 
-  <!-- ⑦ 宏观流动性 -->
+  <!-- ⑧ 宏观流动性 -->
   <section class="sec" id="s7">
-    <div class="sec-h"><span class="no">⑦</span><h2>宏观流动性</h2><span class="asof" id="asof7"></span></div>
+    <div class="sec-h"><span class="no">⑧</span><h2>宏观流动性</h2><span class="asof" id="asof7"></span></div>
     <div class="note" id="note7"></div>
     <div class="grid2">
       <div class="card"><h3>DR007 与 10Y国债收益率<span class="u">%</span></h3><div id="c_rates" class="chart chart-tall"></div></div>
@@ -151,9 +162,9 @@ footer{margin:34px auto 40px;font-size:12px;color:var(--sub);line-height:1.9;bac
     </div>
   </section>
 
-  <!-- ⑧ 次日关注 -->
+  <!-- ⑨ 次日关注 -->
   <section class="sec" id="s8">
-    <div class="sec-h"><span class="no">⑧</span><h2>次日关注 · 资金面信号跟踪</h2><span class="asof" id="asof8"></span></div>
+    <div class="sec-h"><span class="no">⑨</span><h2>次日关注 · 资金面信号跟踪</h2><span class="asof" id="asof8"></span></div>
     <div class="note" id="note8"></div>
     <div id="outlook_list"></div>
   </section>
